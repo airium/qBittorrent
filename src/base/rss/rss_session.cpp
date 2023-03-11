@@ -550,7 +550,7 @@ void Session::setRefreshInterval(const int refreshInterval)
     if (m_storeRefreshInterval != refreshInterval)
     {
         m_storeRefreshInterval = refreshInterval;
-        m_refreshTimer.start(std::chrono::minutes(m_storeRefreshInterval));
+        m_refreshTimer.start(std::chrono::seconds(m_storeRefreshInterval));
     }
 }
 
