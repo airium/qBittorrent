@@ -922,6 +922,7 @@ window.qBittorrent.DynamicTable = (function() {
             this.newColumn('upspeed', '', 'QBT_TR(Up Speed)QBT_TR[CONTEXT=TransferListModel]', 100, true);
             this.newColumn('eta', '', 'QBT_TR(ETA)QBT_TR[CONTEXT=TransferListModel]', 100, true);
             this.newColumn('ratio', '', 'QBT_TR(Ratio)QBT_TR[CONTEXT=TransferListModel]', 100, true);
+            this.newColumn('ratio_per_month', '', 'QBT_TR(Ratio Per Month)QBT_TR[CONTEXT=TransferListModel]', 120, true);
             this.newColumn('category', '', 'QBT_TR(Category)QBT_TR[CONTEXT=TransferListModel]', 100, false);
             this.newColumn('tags', '', 'QBT_TR(Tags)QBT_TR[CONTEXT=TransferListModel]', 100, false);
             this.newColumn('added_on', '', 'QBT_TR(Added On)QBT_TR[CONTEXT=TransferListModel]', 100, true);
@@ -948,6 +949,7 @@ window.qBittorrent.DynamicTable = (function() {
             this.columns['num_seeds'].dataProperties.push('num_complete');
             this.columns['num_leechs'].dataProperties.push('num_incomplete');
             this.columns['time_active'].dataProperties.push('seeding_time');
+            this.columns['ratio_per_month'].dataProperties = ['uploaded', 'size', 'time_active'];
 
             this.initColumnsFunctions();
         },
@@ -1221,6 +1223,26 @@ window.qBittorrent.DynamicTable = (function() {
                 const string = (ratio === -1) ? '∞' : window.qBittorrent.Misc.toFixedPointString(ratio, 2);
                 td.set('text', string);
                 td.set('title', string);
+            };
+
+            // ratio per month
+            this.columns['ratio_per_month'].getRowValue = function(row) {
+                const uploaded = row['full_data'][this.dataProperties[0]];
+                const size = row['full_data'][this.dataProperties[1]];
+                const timeActive = row['full_data'][this.dataProperties[2]];
+                if ((size <= 0) || (timeActive <= 0))
+                    return 0;
+
+                return (uploaded * 720) / (size * timeActive);
+            };
+            this.columns['ratio_per_month'].updateTd = function(td, row) {
+                const value = this.getRowValue(row);
+                const string = window.qBittorrent.Misc.toFixedPointString(value, 2);
+                td.set('text', string);
+                td.set('title', string);
+            };
+            this.columns['ratio_per_month'].compareRows = function(row1, row2) {
+                return compareNumbers(this.getRowValue(row1), this.getRowValue(row2));
             };
 
             // added on
