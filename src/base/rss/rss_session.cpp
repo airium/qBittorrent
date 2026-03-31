@@ -94,7 +94,7 @@ Session::Session()
     connect(&m_refreshTimer, &QTimer::timeout, this, &Session::refresh);
     if (isProcessingEnabled())
     {
-        m_refreshTimer.start(std::chrono::minutes(refreshInterval()));
+        m_refreshTimer.start(std::chrono::seconds(refreshInterval()));
         refresh();
     }
 
@@ -474,7 +474,7 @@ void Session::setProcessingEnabled(const bool enabled)
         m_storeProcessingEnabled = enabled;
         if (enabled)
         {
-            m_refreshTimer.start(std::chrono::minutes(refreshInterval()));
+            m_refreshTimer.start(std::chrono::seconds(refreshInterval()));
             refresh();
         }
         else
@@ -521,7 +521,7 @@ void Session::setRefreshInterval(const int refreshInterval)
     if (m_storeRefreshInterval != refreshInterval)
     {
         m_storeRefreshInterval = refreshInterval;
-        m_refreshTimer.start(std::chrono::minutes(m_storeRefreshInterval));
+        m_refreshTimer.start(std::chrono::seconds(m_storeRefreshInterval));
     }
 }
 
